@@ -111,6 +111,12 @@ module Anemone
           loc = url.merge(loc) if loc.relative?
 
           response, response_time = get_response(loc, referer)
+
+          body = response.body
+          if body.encoding.name == 'ASCII-8BIT'
+            body.force_encoding('utf-8')
+          end
+
           code = Integer(response.code)
           redirect_to = response.is_a?(Net::HTTPRedirection) ? URI(response['location']).normalize : nil
           yield response, code, loc, redirect_to, response_time
