@@ -45,10 +45,12 @@ module Anemone
       @depth = params[:depth] || 0
       @redirect_to = to_absolute(params[:redirect_to])
       @response_time = params[:response_time]
-      @body = params[:body]
+      @body = params[:body] ? params[:body].dup : nil
       @error = params[:error]
 
       @fetched = !params[:code].nil?
+
+      @body_dummy = @body ? @body.dup : nil
     end
 
     #
@@ -69,11 +71,17 @@ module Anemone
       @links
     end
 
+    def set_doc(doc)
+      @doc = doc
+    end
+
     #
     # Nokogiri document for the HTML body
     #
     def doc
       return @doc if @doc
+
+      @body = @body_dummy
       @doc = Nokogiri::HTML(@body) if @body && html? rescue nil
     end
 
